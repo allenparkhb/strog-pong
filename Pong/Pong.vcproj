@@ -176,13 +176,25 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Object.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Renderer.cpp"
 				>
 			</File>
+			<Filter
+				Name="Objects"
+				>
+				<File
+					RelativePath=".\Object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Paddle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Wall.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -198,13 +210,29 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Object.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Renderer.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Usefuls.h"
+				>
+			</File>
+			<Filter
+				Name="Objects"
+				>
+				<File
+					RelativePath=".\Object.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Paddle.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Wall.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -223,6 +251,22 @@
 				RelativePath=".\resource.h"
 				>
 			</File>
+			<Filter
+				Name="Textures"
+				>
+				<File
+					RelativePath=".\ball.png"
+					>
+				</File>
+				<File
+					RelativePath=".\paddle.png"
+					>
+				</File>
+				<File
+					RelativePath=".\wall.png"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

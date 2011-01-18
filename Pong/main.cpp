@@ -6,14 +6,18 @@
 #include "resource.h"
 #include "Renderer.h"
 #include "DirectInput.h"
-
-const unsigned int cnScreenWidth = 800;
-const unsigned int cnScreenHeight = 600;
+#include "Paddle.h"
+#include "Usefuls.h"
 
 /* Prototypes */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR psCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HWND OpenWindow(const char* cszClassName, const char* cszWindowName, int nCmdShow);
+
+ObjectList CreateObjects();
+void Update(ObjectList vObjects);
+
+
 
 /*****************************************************\
 * WinMain                                             *
@@ -22,14 +26,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 
 	/* Create the main window */
-	HWND hWnd = OpenWindow("D3DWindow", "Pong Clone", nCmdShow);
+	HWND hWnd = OpenWindow("D3DWindow", "Gear Pong", nCmdShow);
 	if (NULL == hWnd)
 	{
 		return E_FAIL;
 	}
 
-	Renderer::Instance()->Init(hWnd);				// initialize renderer, giving it the window handler
-	DirectInput::Instance()->Init(hWnd, hInstance);	// initialize DirectInput
+	Renderer::Instance()->Init(hWnd);			// initialize renderer, giving it the window handler
+	DirectInput::Instance()->Init(hWnd, hInstance);				// initialize DirectInput
+	ObjectList vObjects;
+
+	vObjects = CreateObjects();
+	
 
 	/* Message loop */
 	MSG uMsg;
@@ -42,7 +50,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			TranslateMessage(&uMsg);
 			DispatchMessage(&uMsg);
 		}
-
+		DirectInput::Instance()->PollDevices();				// get input
+		Renderer::Instance()->RenderOneFrame(vObjects);		// draw one frame
+		Update(vObjects);									// update
 
 	}
 
@@ -106,3 +116,48 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
+
+
+ObjectList CreateObjects()
+{
+	ObjectList objects;
+
+	// create pointers to all the objects
+	Wall* upperWall;
+	Wall* lowerWall;
+	Paddle* leftPaddle;
+	Paddle* rightPaddle;
+	//Ball*	PongBall;
+
+	upperWall = new Wall;
+	lowerWall = new Wall;
+	leftPaddle = new Paddle;
+	rightPaddle = new Paddle;
+	//PongBall = new Ball;
+
+
+	upperWall->Init(300, 10);
+	lowerWall->Init(300, cnScreenHeight - 60);
+	leftPaddle->Init(300, 150, DIK_A, DIK_Z);
+	rightPaddle->Init(1055, 150, DIK_UP, DIK_DOWN);
+	//PongBall->Init(cnScreenWidth / 2, cnScreenHeight / 2);
+
+	//store all objects into a vector
+	objects.push_back(upperWall);
+	objects.push_back(lowerWall);
+	objects.push_back(leftPaddle);
+	objects.push_back(rightPaddle);
+	//objects.push_back(PongBall);
+
+	return objects;
+}
+
+void Update(ObjectList vObjects)
+{
+	Renderer::Instance()->Update();
+
+	for each(Object* pObject in vObjects)
+	{
+		pObject->Update();
+	}
+}
