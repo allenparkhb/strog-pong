@@ -10,6 +10,8 @@
 class DirectInput
 {
 private:
+	DirectInput();								// as this is a singleton, the ctor is private
+
 	IDirectInput8*			m_pDIObject;		// direct input device
 	LPDIRECTINPUTDEVICE8	m_pDIKeyboard;		// device managing keyboard input
 	LPDIRECTINPUTDEVICE8	m_pDIMouse;			// device managing mouse input
@@ -17,14 +19,17 @@ private:
 	DIMOUSESTATE			m_mouseState;		// captures mouse input
 
 public:
-	DirectInput();
-	inline static DirectInput* Instance()
+	inline static DirectInput* Instance()		// the instance of the singleton DirectInput
 	{
-		static DirectInput theInput;
-		return &theInput;
+		static DirectInput input;
+		return &input;
 	}
 	void Init(HWND hWnd, HINSTANCE hInst);
-	void Update( int scrWidth, int scrHeight);
+	void PollDevices();
+	bool keyDown(char key);
+	bool mouseButtonDown(int button);
+	float mouseDX();
+	float mouseDY();
 	~DirectInput();
 };
 

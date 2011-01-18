@@ -3,41 +3,40 @@
 
 // used to make debug easier when dealing with DirectX
 #ifdef _DEBUG
-	#ifndef HR
+#ifndef HR
 
-	#define HR(x)					\
+#define HR(x)					\
 	{								\
-		HRESULT hr = x;				\
-		if (FAILED(hr))				\
+	HRESULT hr = x;				\
+	if (FAILED(hr))				\
 		{							\
-			DXTRACE_ERR(#x, hr);	\
-			DebugBreak();			\
+		DXTRACE_ERR(#x, hr);	\
+		DebugBreak();			\
 		}							\
 	}
-	#endif
+#endif
 #else
-	#ifndef HR
-	#define HR(x) x;
-	#endif
+#ifndef HR
+#define HR(x) x;
+#endif
 #endif
 
 // initializes most member variables to default values
 Renderer::Renderer()
-	: m_pD3DDevice(NULL)
-	, m_pD3DSprite(NULL)
-	, m_lpTexture(NULL)
-	, m_hWnd(NULL)
-	, m_bWindowed(true)
-	, m_fScreenHeight(0)
-	, m_fScreenWidth(0)
+: m_pD3DDevice(NULL)
+, m_pD3DSprite(NULL)
+, m_hWnd(NULL)
+, m_bWindowed(true)
+, m_fScreenHeight(0)
+, m_fScreenWidth(0)
 {
 }
 
 void Renderer::Init(HWND hWnd)
 {
 	SetupDevice(hWnd);
+	SetupTextures();
 	SetupFont();
-	SetupSpriteHandler();
 }
 
 void Renderer::SetupDevice(HWND hWnd)
@@ -97,22 +96,32 @@ void Renderer::SetupFont()
 
 	// set up font used to display fps counter
 	D3DXCreateFont(m_pD3DDevice, Font.getFontSize(), 0, FW_BOLD, 0, false,
-					DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
-					DEFAULT_PITCH | FF_DONTCARE, TEXT("Times New Roman"), &tempFont);
+		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE, TEXT("Times New Roman"), &tempFont);
 
 	Font.Init(tempFont);
 }
 
-void Renderer::SetupSpriteHandler()
+void Renderer::SetupTextures()
 {
-	// set up sprite handler
-	D3DXCreateSprite(m_pD3DDevice, &m_pD3DSprite);
 
-	// create sprite texture and image info
-	D3DXCreateTextureFromFileEx(m_pD3DDevice, "test.tga", 0, 0, 0, 0,
-										D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
-										D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
-										&m_imageInfo, 0, &m_lpTexture);
+	D3DXCreateSprite(m_pD3DDevice, &m_pD3DSprite);	// set up sprite handler
+
+	// set up the textures to be used
+	D3DXCreateTextureFromFileEx(m_pD3DDevice, "wall.png", 0, 0, 0, 0,
+		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
+		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
+		&m_tpWall.imgInfo, 0, &m_tpWall.lpTexture);
+
+	D3DXCreateTextureFromFileEx(m_pD3DDevice, "paddle.png", 0, 0, 0, 0,
+		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
+		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
+		&m_tpPaddle.imgInfo, 0, &m_tpPaddle.lpTexture);
+
+	D3DXCreateTextureFromFileEx(m_pD3DDevice, "ball.png", 0, 0, 0, 0,
+		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
+		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
+		&m_tpBall.imgInfo, 0, &m_tpBall.lpTexture);
 }
 
 void Renderer::Update()
@@ -120,7 +129,7 @@ void Renderer::Update()
 	Font.Update();
 }
 
-void Renderer::RenderOneFrame()
+void Renderer::RenderOneFrame(ObjectList vToDraw)
 {
 	if(NULL == m_pD3DDevice) return;
 
@@ -143,37 +152,48 @@ void Renderer::RenderOneFrame()
 		break;
 	}
 
-	// there should be no more device related errors at this point
-
 	// clear back buffer and z-buffer
 	HR(m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0));
 
-	// begin preparing the frame
-	HRESULT hr = m_pD3DDevice->BeginScene();
+
+	HRESULT hr = m_pD3DDevice->BeginScene();		// begin preparing the frame
 	if(FAILED(hr))
 	{
-		//if preparation failed, stop rendering
-		return;
+		return;										// if preparation failed, stop rendering
 	}
 
-	// prepare to draw sprites to the screen
-	m_pD3DSprite->Begin(0);
+	m_pD3DSprite->Begin(D3DXSPRITE_ALPHABLEND);		// prepare to draw sprites to the screen
+
+	for each(Object* pObject in vToDraw)
+	{
+		D3DXMatrixTranslation(&matTrans, 
+			pObject->getPosition().x, 
+			pObject->getPosition().y, 
+			0);
+		D3DXMatrixRotationZ(&matRotation, pObject->getAngle());
+		D3DXMatrixScaling(&matScale, pObject->getScale(), pObject->getScale(), 0);
 
 
-	m_pD3DSprite->End(); // stop drawing sprites
+		D3DXMatrixMultiply(&matWorld, &matScale, &matRotation);
+		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);
+
+		m_pD3DSprite->SetTransform(&matWorld);
+		m_pD3DSprite->Draw(pObject->getTexture(), 0, &pObject->getCenter(),
+			0, D3DCOLOR_ARGB(255, 255, 255, 255));
+	}
+
+	m_pD3DSprite->End();							// stop drawing sprites
 
 	Font.Draw();
 
-	hr = m_pD3DDevice->EndScene();	// stop preparing the frame
+	hr = m_pD3DDevice->EndScene();					// stop preparing the frame
 
 	if(FAILED(hr)) 
 	{
-		// stop rendering if EndScene failed
-		return;
+		return;										// stop rendering if EndScene failed
 	}
 
-	//display back buffer onto the screen
-	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);  //display back buffer onto the screen
 }
 
 // release memory
@@ -181,5 +201,20 @@ Renderer::~Renderer()
 {
 	m_pD3DDevice->Release();
 	m_pD3DSprite->Release();
-	m_lpTexture->Release();
+	m_tpWall.lpTexture->Release();
+	m_tpPaddle.lpTexture->Release();
+	m_tpBall.lpTexture->Release();
+}
+
+TexturePack Renderer::getTexturePack(int type)
+{
+	if(type == WALL)
+		return m_tpWall;
+	else if(type == PADDLE)
+		return m_tpPaddle;
+	else if(type == BALL)
+		return m_tpBall;
+
+	else
+		return m_tpBall;
 }
