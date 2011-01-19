@@ -8,8 +8,8 @@ class Paddle: public Wall
 private:
 	int m_upperLimit;
 	int m_lowerLimit;
-	char m_upKey;
-	char m_downKey;
+	unsigned char m_upKey;
+	unsigned char m_downKey;
 	int m_speed;
 
 public:

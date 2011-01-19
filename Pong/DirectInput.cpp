@@ -58,7 +58,7 @@ void DirectInput::PollDevices()
 
 }
 
-bool DirectInput::keyDown(char key)
+bool DirectInput::keyDown(unsigned char key)
 {
 	return (m_kbBuffer[key] & 0x80) != 0;
 }

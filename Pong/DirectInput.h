@@ -26,7 +26,7 @@ public:
 	}
 	void Init(HWND hWnd, HINSTANCE hInst);
 	void PollDevices();
-	bool keyDown(char key);
+	bool keyDown(unsigned char key);
 	bool mouseButtonDown(int button);
 	float mouseDX();
 	float mouseDY();
