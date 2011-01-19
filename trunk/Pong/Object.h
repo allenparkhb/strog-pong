@@ -15,9 +15,9 @@ protected:
 	float				m_fScale;		// how big the object is scaled
 	float				m_fAngle;		// rotation
 	//D3DXMATRIX		m_mWorld;		// world transform
-	D3DCOLOR			m_dColor;
-	TexturePack			m_tPack;
-	D3DXVECTOR3			m_vCenter;
+	D3DCOLOR			m_dColor;		// currently not being used
+	TexturePack			m_tPack;		// holds the texture and image info
+	D3DXVECTOR3			m_vCenter;		// center of the texture image
 	RECT				m_BoundingRect;	// used for collision
 
 public:

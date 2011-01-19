@@ -136,6 +136,7 @@ ObjectList CreateObjects()
 	//PongBall = new Ball;
 
 
+	// using magic numbers for position placement until I can figure out texture resizing issue
 	upperWall->Init(300, 10);
 	lowerWall->Init(300, cnScreenHeight - 60);
 	leftPaddle->Init(300, 150, DIK_A, DIK_Z);

@@ -34,9 +34,9 @@ Renderer::Renderer()
 
 void Renderer::Init(HWND hWnd)
 {
-	SetupDevice(hWnd);
-	SetupTextures();
-	SetupFont();
+	SetupDevice(hWnd);		// properly setup the D3DDevice
+	SetupTextures();		// setup the three textures used in the program
+	SetupFont();			// setup the font handler object
 }
 
 void Renderer::SetupDevice(HWND hWnd)
@@ -156,29 +156,33 @@ void Renderer::RenderOneFrame(ObjectList vToDraw)
 	HR(m_pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0));
 
 
-	HRESULT hr = m_pD3DDevice->BeginScene();		// begin preparing the frame
+	HRESULT hr = m_pD3DDevice->BeginScene();			// begin preparing the frame
 	if(FAILED(hr))
 	{
-		return;										// if preparation failed, stop rendering
+		return;											// if preparation failed, stop rendering
 	}
 
-	m_pD3DSprite->Begin(D3DXSPRITE_ALPHABLEND);		// prepare to draw sprites to the screen
+	m_pD3DSprite->Begin(D3DXSPRITE_ALPHABLEND);			// prepare to draw sprites to the screen
 
 	for each(Object* pObject in vToDraw)
 	{
-		D3DXMatrixTranslation(&matTrans, 
+		D3DXMatrixScaling(&matScale,					// prepare the scaling matrix
+							pObject->getScale(),	
+							pObject->getScale(), 0);
+		D3DXMatrixRotationZ(&matRotation,				// prepare the rotation matrix
+								pObject->getAngle());
+		D3DXMatrixTranslation(&matTrans,				// prepare the translation matrix
 			pObject->getPosition().x, 
 			pObject->getPosition().y, 
 			0);
-		D3DXMatrixRotationZ(&matRotation, pObject->getAngle());
-		D3DXMatrixScaling(&matScale, pObject->getScale(), pObject->getScale(), 0);
 
 
-		D3DXMatrixMultiply(&matWorld, &matScale, &matRotation);
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);
+		// use scaling, rotation, and translation matrices to setup the world transform
+		D3DXMatrixMultiply(&matWorld, &matScale, &matRotation);	// world = scaling * rotation
+		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);	// world = world * translation
 
-		m_pD3DSprite->SetTransform(&matWorld);
-		m_pD3DSprite->Draw(pObject->getTexture(), 0, &pObject->getCenter(),
+		m_pD3DSprite->SetTransform(&matWorld);					// apply the world transform to the object
+		m_pD3DSprite->Draw(pObject->getTexture(), 0, &pObject->getCenter(),		// draw
 			0, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
