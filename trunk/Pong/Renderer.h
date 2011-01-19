@@ -15,24 +15,21 @@
 // graphics engine
 class Renderer
 {
-private:
-	Renderer();									// as this is a singleton, the ctor is private
+	private:
+	Renderer();										// as this is a singleton, the ctor is private
 
-	IDirect3DDevice9*		m_pD3DDevice;		// the main d3d interface
-	ID3DXFont*				m_pD3DFont;			// font used for fps display
-	ID3DXSprite*			m_pD3DSprite;		// sprite used for the many models used in the game
-	TexturePack				m_tpWall;
-	TexturePack				m_tpPaddle;
-	TexturePack				m_tpBall;
-	//LPDIRECT3DTEXTURE9	m_lpTexture;		// texture that the above sprite uses
-	//D3DXIMAGE_INFO		m_imageInfo;		// image info that the above sprite uses
-	HWND					m_hWnd;				// a 'personal' copy of the hWnd that Renderer can use
-	bool					m_bWindowed;		// true = windowed; false = fullscreen
-	float					m_fScreenWidth;		// screen height given by hWnd
-	float					m_fScreenHeight;	// screen width given by hWnd
-	D3DPRESENT_PARAMETERS	m_D3Dpp;			// present parameters
+	IDirect3DDevice9*		m_pD3DDevice;			// the main d3d interface
+	ID3DXFont*				m_pD3DFont;				// font used for fps display
+	ID3DXSprite*			m_pD3DSprite;			// sprite used for the many models used in the game
+	TexturePack				m_tPacks[TEXTURESIZE];	// array of texture and image_info
+	char*					m_cszFiles[TEXTURESIZE];// array of texture file names
+	HWND					m_hWnd;					// a 'personal' copy of the hWnd that Renderer can use
+	bool					m_bWindowed;			// true = windowed; false = fullscreen
+	float					m_fScreenWidth;			// screen height given by hWnd
+	float					m_fScreenHeight;		// screen width given by hWnd
+	D3DPRESENT_PARAMETERS	m_D3Dpp;				// present parameters
 	
-	FontHandler				Font;				// takes care of all font displays on the screen
+	FontHandler				Font;					// takes care of all font displays on the screen
 
 	// used as temporary constructs to hold transform data
 	D3DXMATRIX matScale;
