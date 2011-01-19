@@ -107,21 +107,20 @@ void Renderer::SetupTextures()
 
 	D3DXCreateSprite(m_pD3DDevice, &m_pD3DSprite);	// set up sprite handler
 
+	// prepare the array of file names
+	m_cszFiles[0] = "wall.png";
+	m_cszFiles[1] = "paddle.png";
+	m_cszFiles[2] = "ball.png";
+
+	// load all the textures used in the program
+	for(int i = 0; i < TEXTURESIZE; i++)
+	{
 	// set up the textures to be used
-	D3DXCreateTextureFromFileEx(m_pD3DDevice, "wall.png", 0, 0, 0, 0,
+	D3DXCreateTextureFromFileEx(m_pD3DDevice, m_cszFiles[i], 0, 0, 0, 0,
 		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
 		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
-		&m_tpWall.imgInfo, 0, &m_tpWall.lpTexture);
-
-	D3DXCreateTextureFromFileEx(m_pD3DDevice, "paddle.png", 0, 0, 0, 0,
-		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
-		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
-		&m_tpPaddle.imgInfo, 0, &m_tpPaddle.lpTexture);
-
-	D3DXCreateTextureFromFileEx(m_pD3DDevice, "ball.png", 0, 0, 0, 0,
-		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
-		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
-		&m_tpBall.imgInfo, 0, &m_tpBall.lpTexture);
+		&m_tPacks[i].imgInfo, 0, &m_tPacks[i].lpTexture);
+	}
 }
 
 void Renderer::Update()
@@ -205,20 +204,19 @@ Renderer::~Renderer()
 {
 	m_pD3DDevice->Release();
 	m_pD3DSprite->Release();
-	m_tpWall.lpTexture->Release();
-	m_tpPaddle.lpTexture->Release();
-	m_tpBall.lpTexture->Release();
+	
+	for(int i = 0; i < TEXTURESIZE; i++)
+	{
+		m_tPacks[i].lpTexture->Release();
+	}
 }
 
 TexturePack Renderer::getTexturePack(int type)
 {
-	if(type == WALL)
-		return m_tpWall;
-	else if(type == PADDLE)
-		return m_tpPaddle;
-	else if(type == BALL)
-		return m_tpBall;
-
-	else
-		return m_tpBall;
+	
+	if(type >= 0 && type < TEXTURESIZE)	// if the requested type is within the bounds of the texture array
+	{
+		return m_tPacks[type];			// return the proper texture pack
+	}
+	else return m_tPacks[0];			// else return the first element by default
 }
