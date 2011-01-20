@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "DirectInput.h"
 #include "Paddle.h"
+#include "ObjectList.h"
 #include "Usefuls.h"
 
 /* Prototypes */
@@ -14,16 +15,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR psCmdLine,
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HWND OpenWindow(const char* cszClassName, const char* cszWindowName, int nCmdShow);
 
-ObjectList CreateObjects();
+ObjectList CreateObjects(int size);
 void Update(ObjectList vObjects);
 
-
+ScreenDim g_Dimensions;
 
 /*****************************************************\
 * WinMain                                             *
 \*****************************************************/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	g_Dimensions.width = 800;
+	g_Dimensions.height = 600;
 
 	/* Create the main window */
 	HWND hWnd = OpenWindow("D3DWindow", "Gear Pong", nCmdShow);
@@ -32,11 +35,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return E_FAIL;
 	}
 
-	Renderer::Instance()->Init(hWnd);			// initialize renderer, giving it the window handler
-	DirectInput::Instance()->Init(hWnd, hInstance);				// initialize DirectInput
-	ObjectList vObjects;
+	RECT rClientRect;									// grab the screen dimensions
+	GetClientRect(hWnd, &rClientRect);
+	g_Dimensions.width = (float)(rClientRect.right - rClientRect.left);
+	g_Dimensions.height = (float)(rClientRect.bottom - rClientRect.top);
 
-	vObjects = CreateObjects();
+	Renderer::Instance()->Init(hWnd);							// initialize renderer, giving it the window handler
+	DirectInput::Instance()->Init(hWnd, hInstance);				// initialize DirectInput
+	ObjectList lObjects;
+
+	lObjects.Init(cnObjectNum);
+
+	lObjects = CreateObjects(cnObjectNum);
 	
 
 	/* Message loop */
@@ -51,8 +61,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(&uMsg);
 		}
 		DirectInput::Instance()->PollDevices();				// get input
-		Renderer::Instance()->RenderOneFrame(vObjects);		// draw one frame
-		Update(vObjects);									// update
+		Renderer::Instance()->RenderOneFrame(lObjects);		// draw one frame
+		Update(lObjects);									// update
 
 	}
 
@@ -97,7 +107,7 @@ HWND OpenWindow(const char* cszWinClassName, const char* cszWindowName, int nCmd
 							cszWindowName,
 							WS_OVERLAPPEDWINDOW,
 							0, 0,
-							cnScreenWidth, cnScreenHeight,
+							g_Dimensions.width, g_Dimensions.height,
 							NULL, NULL, ::GetModuleHandle(NULL), NULL);
 
 	ShowWindow(hWnd, nCmdShow);
@@ -112,15 +122,24 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_CLOSE:
 				PostQuitMessage(0);
 				break;
+		case WM_KEYUP:
+				switch(wParam)
+				{
+				case VK_ESCAPE:
+					PostQuitMessage(0);
+					break;
+				}
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 
 
-ObjectList CreateObjects()
+ObjectList CreateObjects(int size)
 {
 	ObjectList objects;
+
+	objects.Init(size);
 
 	// create pointers to all the objects
 	Wall* upperWall;
@@ -137,18 +156,18 @@ ObjectList CreateObjects()
 
 
 	// using magic numbers for position placement until I can figure out texture resizing issue
-	upperWall->Init(300, 10);
-	lowerWall->Init(300, cnScreenHeight - 60);
-	leftPaddle->Init(300, 150, DIK_A, DIK_Z);
-	rightPaddle->Init(1055, 150, DIK_UP, DIK_DOWN);
-	//PongBall->Init(cnScreenWidth / 2, cnScreenHeight / 2);
+	upperWall->Init(TOP, g_Dimensions);
+	lowerWall->Init(BOTTOM, g_Dimensions);
+	leftPaddle->Init(LEFT, DIK_A, DIK_Z, g_Dimensions);
+	rightPaddle->Init(RIGHT, DIK_UP, DIK_DOWN, g_Dimensions);
+	//PongBall->Init(g_iScreenWidth / 2, g_iScreenHeight / 2, g_Dimensions);
 
 	//store all objects into a vector
-	objects.push_back(upperWall);
-	objects.push_back(lowerWall);
-	objects.push_back(leftPaddle);
-	objects.push_back(rightPaddle);
-	//objects.push_back(PongBall);
+	objects.Push(upperWall);
+	objects.Push(lowerWall);
+	objects.Push(leftPaddle);
+	objects.Push(rightPaddle);
+	//objects.Push(PongBall);
 
 	return objects;
 }
@@ -156,9 +175,5 @@ ObjectList CreateObjects()
 void Update(ObjectList vObjects)
 {
 	Renderer::Instance()->Update();
-
-	for each(Object* pObject in vObjects)
-	{
-		pObject->Update();
-	}
+	vObjects.Update();
 }

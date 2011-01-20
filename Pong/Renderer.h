@@ -1,6 +1,3 @@
-#ifndef RENDERER_H
-#define RENDERER_H
-
 #pragma once
 #include <d3d9.h>
 #pragma comment(lib, "d3d9.lib")
@@ -10,7 +7,10 @@
 #pragma comment(lib, "dxerr.lib")
 #include "FontHandler.h"
 #include "Object.h"
+#include "ObjectList.h"
 #include "Usefuls.h"
+
+class ObjectList;
 
 // graphics engine
 class Renderer
@@ -25,8 +25,7 @@ class Renderer
 	char*					m_cszFiles[TEXTURESIZE];// array of texture file names
 	HWND					m_hWnd;					// a 'personal' copy of the hWnd that Renderer can use
 	bool					m_bWindowed;			// true = windowed; false = fullscreen
-	float					m_fScreenWidth;			// screen height given by hWnd
-	float					m_fScreenHeight;		// screen width given by hWnd
+	ScreenDim				m_dimensions;			// screen height and width
 	D3DPRESENT_PARAMETERS	m_D3Dpp;				// present parameters
 	
 	FontHandler				Font;					// takes care of all font displays on the screen
@@ -56,4 +55,3 @@ public:
 	// get functions
 	TexturePack	getTexturePack(int);
 };
-#endif

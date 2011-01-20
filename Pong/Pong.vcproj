@@ -176,6 +176,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ObjectList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Renderer.cpp"
 				>
 			</File>
@@ -207,6 +211,10 @@
 			</File>
 			<File
 				RelativePath=".\FontHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ObjectList.h"
 				>
 			</File>
 			<File
