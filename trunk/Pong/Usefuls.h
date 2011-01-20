@@ -1,7 +1,7 @@
-#pragma once
+#ifndef USEFULS_H
+#define USEFULS_H
 
-static const unsigned int cnScreenWidth = 800;
-static const unsigned int cnScreenHeight = 600;
+static const unsigned int cnObjectNum = 5;
 
 enum eTextures
 {
@@ -11,8 +11,24 @@ enum eTextures
 	TEXTURESIZE
 };
 
+enum ePositions
+{
+	TOP,
+	BOTTOM,
+	LEFT,
+	RIGHT
+};
+
 struct TexturePack
 {
 	LPDIRECT3DTEXTURE9	lpTexture;
 	D3DXIMAGE_INFO		imgInfo;
 };
+
+struct ScreenDim
+{
+	unsigned int width;
+	unsigned int height;
+};
+
+#endif

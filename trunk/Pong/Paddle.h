@@ -6,14 +6,13 @@
 class Paddle: public Wall
 {
 private:
-	int m_upperLimit;
-	int m_lowerLimit;
 	unsigned char m_upKey;
 	unsigned char m_downKey;
 	int m_speed;
 
 public:
-	virtual void Init(int xPos, int yPos, char up, char down);
+	virtual void Init(int loc, char up, char down, ScreenDim dimensions);
 	virtual void Update();
+	virtual void MoveBack();
 
 };

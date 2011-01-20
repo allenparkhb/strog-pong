@@ -1,7 +1,8 @@
 #include "Renderer.h"
+#include "ObjectList.h"
 
 
-// used to make debug easier when dealing with DirectX
+// used to make debug easier when using DirectX
 #ifdef _DEBUG
 #ifndef HR
 
@@ -27,8 +28,6 @@ Renderer::Renderer()
 , m_pD3DSprite(NULL)
 , m_hWnd(NULL)
 , m_bWindowed(true)
-, m_fScreenHeight(0)
-, m_fScreenWidth(0)
 {
 }
 
@@ -51,8 +50,8 @@ void Renderer::SetupDevice(HWND hWnd)
 	{
 		throw "GetClientRect() failed";
 	}
-	m_fScreenWidth = (float)(rClientRect.right - rClientRect.left);
-	m_fScreenHeight = (float)(rClientRect.bottom - rClientRect.top);
+	m_dimensions.width = (float)(rClientRect.right - rClientRect.left);
+	m_dimensions.height = (float)(rClientRect.bottom - rClientRect.top);
 
 	D3DCAPS9 D3DCaps;
 	HR(pD3DObject->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &D3DCaps));
@@ -77,8 +76,8 @@ void Renderer::SetupDevice(HWND hWnd)
 	m_D3Dpp.EnableAutoDepthStencil	= TRUE;
 	m_D3Dpp.BackBufferCount			= 1;
 	m_D3Dpp.BackBufferFormat		= D3DFMT_X8R8G8B8;
-	m_D3Dpp.BackBufferWidth			= (int)m_fScreenWidth;
-	m_D3Dpp.BackBufferHeight		= (int)m_fScreenHeight;
+	m_D3Dpp.BackBufferWidth			= m_dimensions.width;
+	m_D3Dpp.BackBufferHeight		= m_dimensions.height;
 	m_D3Dpp.SwapEffect				= D3DSWAPEFFECT_DISCARD;
 	m_D3Dpp.Flags					= D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 	m_D3Dpp.MultiSampleQuality		= 0;
@@ -128,7 +127,7 @@ void Renderer::Update()
 	Font.Update();
 }
 
-void Renderer::RenderOneFrame(ObjectList vToDraw)
+void Renderer::RenderOneFrame(ObjectList lToDraw)
 {
 	if(NULL == m_pD3DDevice) return;
 
@@ -163,17 +162,18 @@ void Renderer::RenderOneFrame(ObjectList vToDraw)
 
 	m_pD3DSprite->Begin(D3DXSPRITE_ALPHABLEND);			// prepare to draw sprites to the screen
 
-	for each(Object* pObject in vToDraw)
+
+	for(int i = 0; i < lToDraw.getSize(); i++)
 	{
 		D3DXMatrixScaling(&matScale,					// prepare the scaling matrix
-							pObject->getScale(),	
-							pObject->getScale(), 0);
+							lToDraw[i]->getScale(),	
+							lToDraw[i]->getScale(), 0);
 		D3DXMatrixRotationZ(&matRotation,				// prepare the rotation matrix
-								pObject->getAngle());
+								lToDraw[i]->getAngle());
 		D3DXMatrixTranslation(&matTrans,				// prepare the translation matrix
-			pObject->getPosition().x, 
-			pObject->getPosition().y, 
-			0);
+			lToDraw[i]->getPosition().x, 
+			lToDraw[i]->getPosition().y, 
+  			0);
 
 
 		// use scaling, rotation, and translation matrices to setup the world transform
@@ -181,7 +181,7 @@ void Renderer::RenderOneFrame(ObjectList vToDraw)
 		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);	// world = world * translation
 
 		m_pD3DSprite->SetTransform(&matWorld);					// apply the world transform to the object
-		m_pD3DSprite->Draw(pObject->getTexture(), 0, &pObject->getCenter(),		// draw
+		m_pD3DSprite->Draw(lToDraw[i]->getTexture(), 0, NULL/*lToDraw[i]->getCenter()*/,		// draw
 			0, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
