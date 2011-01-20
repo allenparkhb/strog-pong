@@ -166,8 +166,8 @@ void Renderer::RenderOneFrame(ObjectList lToDraw)
 	for(int i = 0; i < lToDraw.getSize(); i++)
 	{
 		D3DXMatrixScaling(&matScale,					// prepare the scaling matrix
-							lToDraw[i]->getScale(),	
-							lToDraw[i]->getScale(), 0);
+							0.80,	
+							0.80, 0);
 		D3DXMatrixRotationZ(&matRotation,				// prepare the rotation matrix
 								lToDraw[i]->getAngle());
 		D3DXMatrixTranslation(&matTrans,				// prepare the translation matrix
