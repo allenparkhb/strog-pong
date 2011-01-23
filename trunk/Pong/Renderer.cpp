@@ -50,8 +50,8 @@ void Renderer::SetupDevice(HWND hWnd)
 	{
 		throw "GetClientRect() failed";
 	}
-	m_dimensions.width = (float)(rClientRect.right - rClientRect.left);
-	m_dimensions.height = (float)(rClientRect.bottom - rClientRect.top);
+	m_dimensions.width = (int)(rClientRect.right - rClientRect.left);
+	m_dimensions.height = (int)(rClientRect.bottom - rClientRect.top);
 
 	D3DCAPS9 D3DCaps;
 	HR(pD3DObject->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &D3DCaps));
@@ -98,7 +98,7 @@ void Renderer::SetupFont()
 		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY,
 		DEFAULT_PITCH | FF_DONTCARE, TEXT("Times New Roman"), &tempFont);
 
-	Font.Init(tempFont);
+	Font.Init(tempFont, m_dimensions);
 }
 
 void Renderer::SetupTextures()
@@ -166,8 +166,8 @@ void Renderer::RenderOneFrame(ObjectList lToDraw)
 	for(int i = 0; i < lToDraw.getSize(); i++)
 	{
 		D3DXMatrixScaling(&matScale,					// prepare the scaling matrix
-							0.80,	
-							0.80, 0);
+							0.80 * lToDraw[i]->getScale(),	
+							0.80 * lToDraw[i]->getScale(), 0);
 		D3DXMatrixRotationZ(&matRotation,				// prepare the rotation matrix
 								lToDraw[i]->getAngle());
 		D3DXMatrixTranslation(&matTrans,				// prepare the translation matrix
@@ -181,13 +181,13 @@ void Renderer::RenderOneFrame(ObjectList lToDraw)
 		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);	// world = world * translation
 
 		m_pD3DSprite->SetTransform(&matWorld);					// apply the world transform to the object
-		m_pD3DSprite->Draw(lToDraw[i]->getTexture(), 0, NULL/*lToDraw[i]->getCenter()*/,		// draw
+		m_pD3DSprite->Draw(lToDraw[i]->getTexture(), 0, NULL,	// draw
 			0, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
 	m_pD3DSprite->End();							// stop drawing sprites
 
-	Font.Draw();
+	Font.Draw(lToDraw.p1Score, lToDraw.p2Score);
 
 	hr = m_pD3DDevice->EndScene();					// stop preparing the frame
 

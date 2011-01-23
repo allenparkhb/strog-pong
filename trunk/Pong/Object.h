@@ -24,11 +24,14 @@ protected:
 public:
 
 	RECT				m_BoundingRect;	// used for collision
+	int					eType;			// used for collision
 
 	Object();
 	virtual void Init(int loc, ScreenDim dimensions) = 0;
 	virtual void Update() = 0;
 	virtual void MoveBack() = 0;
+	virtual void Bounce(int otherObject){}
+	virtual void setBack(){}
 
 	D3DXVECTOR3 getPosition() { return m_vPos; }
 	float getScale() { return m_fScale; }

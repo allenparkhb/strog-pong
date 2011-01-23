@@ -1,7 +1,9 @@
 #include "ObjectList.h"
 
-void ObjectList::Init(int size)
+void ObjectList::Init(int size, ScreenDim dims)
 {
+	p1Score = p2Score = 0;
+	this->dimensions = dims;
 	maxSize = size;
 	List = new Object*[maxSize];
 	currSize = 0;
@@ -9,7 +11,7 @@ void ObjectList::Init(int size)
 
 void ObjectList::ForgiveCollisions(int elem)
 {
-	bool collided = true;
+	bool collided;
 
 	for(int i = 0; i < currSize; i++)
 	{
@@ -38,9 +40,27 @@ void ObjectList::ForgiveCollisions(int elem)
 
 			if(collided)
 			{
-				List[elem]->MoveBack();
+				List[elem]->MoveBack();					// move back if collided
+				if(List[elem]->eType == BALL)
+				{
+					List[elem]->Bounce(List[i]->eType);	// ball bounces off object
+				}
 			}
 
+			// check if ball went out of bounds and assign points
+			if(List[elem]->eType == BALL)
+			{
+				if(List[elem]->m_BoundingRect.left <= 0)
+				{
+					p2Score++;
+					List[elem]->setBack();
+				}
+				else if(List[elem]->m_BoundingRect.right >= dimensions.width)
+				{
+					p1Score++; 
+					List[elem]->setBack();
+				}
+			}
 		}
 	}
 }

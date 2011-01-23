@@ -9,9 +9,13 @@ private:
 	void ForgiveCollisions(int elem);
 	int maxSize;
 	int currSize;
+	ScreenDim dimensions;
 
 public:
-	void Init(int size);
+	int p1Score;
+	int p2Score;
+
+	void Init(int size, ScreenDim dims);
 	void Update();
 	void Push(Object* pObj);
 
