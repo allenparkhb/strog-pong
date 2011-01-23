@@ -187,6 +187,10 @@
 				Name="Objects"
 				>
 				<File
+					RelativePath=".\Ball.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Object.cpp"
 					>
 				</File>
@@ -228,6 +232,10 @@
 			<Filter
 				Name="Objects"
 				>
+				<File
+					RelativePath=".\Ball.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Object.h"
 					>

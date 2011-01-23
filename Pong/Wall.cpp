@@ -5,7 +5,6 @@ void Wall::Init(int loc, ScreenDim dimensions)
 	// obtain the wall texture
 	m_tPack = Renderer::Instance()->getTexturePack(WALL);
 
-	
 	m_vPos.x = 0;			// x position of walls is always 0
 
 	if(loc == BOTTOM)		// set the bottom wall's y position
@@ -22,4 +21,6 @@ void Wall::Init(int loc, ScreenDim dimensions)
 	m_BoundingRect.bottom = (LONG)(m_vPos.y + m_tPack.imgInfo.Height);
 	m_BoundingRect.left = (LONG)(m_vPos.x);
 	m_BoundingRect.right = (LONG)(m_vPos.x + m_tPack.imgInfo.Width);
+
+	eType = WALL;
 }

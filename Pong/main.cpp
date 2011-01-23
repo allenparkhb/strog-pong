@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "DirectInput.h"
 #include "Paddle.h"
+#include "Ball.h"
 #include "ObjectList.h"
 #include "Usefuls.h"
 
@@ -16,7 +17,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 HWND OpenWindow(const char* cszClassName, const char* cszWindowName, int nCmdShow);
 
 ObjectList CreateObjects(int size);
-void Update(ObjectList vObjects);
+void Update(ObjectList &vObjects);
 
 ScreenDim g_Dimensions;
 
@@ -37,14 +38,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	RECT rClientRect;									// grab the screen dimensions
 	GetClientRect(hWnd, &rClientRect);
-	g_Dimensions.width = (float)(rClientRect.right - rClientRect.left);
-	g_Dimensions.height = (float)(rClientRect.bottom - rClientRect.top);
+	g_Dimensions.width = (int)(rClientRect.right - rClientRect.left);
+	g_Dimensions.height = (int)(rClientRect.bottom - rClientRect.top);
 
 	Renderer::Instance()->Init(hWnd);							// initialize renderer, giving it the window handler
 	DirectInput::Instance()->Init(hWnd, hInstance);				// initialize DirectInput
 	ObjectList lObjects;
 
-	lObjects.Init(cnObjectNum);
+	lObjects.Init(cnObjectNum, g_Dimensions);
 
 	lObjects = CreateObjects(cnObjectNum);
 	
@@ -139,40 +140,38 @@ ObjectList CreateObjects(int size)
 {
 	ObjectList objects;
 
-	objects.Init(size);
+	objects.Init(size, g_Dimensions);
 
 	// create pointers to all the objects
 	Wall* upperWall;
 	Wall* lowerWall;
 	Paddle* leftPaddle;
 	Paddle* rightPaddle;
-	//Ball*	PongBall;
+	Ball*	PongBall;
 
 	upperWall = new Wall;
 	lowerWall = new Wall;
 	leftPaddle = new Paddle;
 	rightPaddle = new Paddle;
-	//PongBall = new Ball;
+	PongBall = new Ball;
 
-
-	// using magic numbers for position placement until I can figure out texture resizing issue
 	upperWall->Init(TOP, g_Dimensions);
 	lowerWall->Init(BOTTOM, g_Dimensions);
 	leftPaddle->Init(LEFT, DIK_A, DIK_Z, g_Dimensions);
 	rightPaddle->Init(RIGHT, DIK_UP, DIK_DOWN, g_Dimensions);
-	//PongBall->Init(g_iScreenWidth / 2, g_iScreenHeight / 2, g_Dimensions);
+	PongBall->Init(MIDDLE, g_Dimensions);
 
 	//store all objects into a vector
 	objects.Push(upperWall);
 	objects.Push(lowerWall);
 	objects.Push(leftPaddle);
 	objects.Push(rightPaddle);
-	//objects.Push(PongBall);
+	objects.Push(PongBall);
 
 	return objects;
 }
 
-void Update(ObjectList vObjects)
+void Update(ObjectList &vObjects)
 {
 	Renderer::Instance()->Update();
 	vObjects.Update();

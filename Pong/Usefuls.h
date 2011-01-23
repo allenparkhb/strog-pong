@@ -16,7 +16,8 @@ enum ePositions
 	TOP,
 	BOTTOM,
 	LEFT,
-	RIGHT
+	RIGHT,
+	MIDDLE
 };
 
 struct TexturePack
