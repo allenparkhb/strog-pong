@@ -165,6 +165,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Button.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DirectInput.cpp"
 				>
 			</File>
@@ -174,6 +178,10 @@
 			</File>
 			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Menu.cpp"
 				>
 			</File>
 			<File
@@ -231,6 +239,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Menu.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ObjectList.h"
 				>
 			</File>
@@ -243,6 +255,10 @@
 				>
 				<File
 					RelativePath=".\Ball.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Button.h"
 					>
 				</File>
 				<File
@@ -293,6 +309,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Intro.avi"
+				>
+			</File>
+			<File
 				RelativePath=".\Intro.wmv"
 				>
 			</File>
@@ -304,11 +324,55 @@
 				RelativePath=".\resource.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Take On Me.mp3"
+				>
+			</File>
 			<Filter
 				Name="Textures"
 				>
 				<File
 					RelativePath=".\ball.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_button_pressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_credits.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_credits_pressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_credits_unpressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_mainbackground.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_options_pressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_options_unpressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_play_unpressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_quit_pressed.png"
+					>
+				</File>
+				<File
+					RelativePath=".\menu\menu_quit_unpressed.png"
 					>
 				</File>
 				<File

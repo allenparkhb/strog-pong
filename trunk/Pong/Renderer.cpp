@@ -107,18 +107,28 @@ void Renderer::SetupTextures()
 	D3DXCreateSprite(m_pD3DDevice, &m_pD3DSprite);	// set up sprite handler
 
 	// prepare the array of file names
-	m_cszFiles[0] = "wall.png";
-	m_cszFiles[1] = "paddle.png";
-	m_cszFiles[2] = "ball.png";
+	m_cszFiles[WALL]		= "wall.png";
+	m_cszFiles[PADDLE]		= "paddle.png";
+	m_cszFiles[BALL]		= "ball.png";
+	m_cszFiles[MAINMENU]	= "menu/menu_mainbackground.png";
+	m_cszFiles[PLAY_UNP]	= "menu/menu_play_unpressed.png";
+	m_cszFiles[PLAY_P]		= "menu/menu_play_pressed.png";
+	m_cszFiles[OPTIONS_UNP] = "menu/menu_options_unpressed.png";
+	m_cszFiles[OPTIONS_P]	= "menu/menu_options_pressed.png";
+	m_cszFiles[CREDITS_UNP] = "menu/menu_credits_unpressed.png";
+	m_cszFiles[CREDITS_P]	= "menu/menu_credits_pressed.png";
+	m_cszFiles[CREDITSPAGE]	= "menu/menu_credits.png";
+	m_cszFiles[QUIT_UNP]	= "menu/menu_quit_unpressed.png";
+	m_cszFiles[QUIT_P]		= "menu/menu_quit_pressed.png";
 
 	// load all the textures used in the program
 	for(int i = 0; i < TEXTURESIZE; i++)
 	{
-	// set up the textures to be used
-	D3DXCreateTextureFromFileEx(m_pD3DDevice, m_cszFiles[i], 0, 0, 0, 0,
-		D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
-		D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
-		&m_tPacks[i].imgInfo, 0, &m_tPacks[i].lpTexture);
+		// set up the textures to be used
+		D3DXCreateTextureFromFileEx(m_pD3DDevice, m_cszFiles[i], 0, 0, 0, 0,
+			D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT,
+			D3DX_DEFAULT, D3DCOLOR_XRGB(255, 0, 255),
+			&m_tPacks[i].imgInfo, 0, &m_tPacks[i].lpTexture);
 	}
 }
 
@@ -127,7 +137,7 @@ void Renderer::Update()
 	Font.Update();
 }
 
-void Renderer::RenderOneFrame(ObjectList lToDraw)
+void Renderer::RenderOneFrame(eGameStates state, ObjectList lToDraw, Menu theMenu)
 {
 	if(NULL == m_pD3DDevice) return;
 
@@ -162,32 +172,60 @@ void Renderer::RenderOneFrame(ObjectList lToDraw)
 
 	m_pD3DSprite->Begin(D3DXSPRITE_ALPHABLEND);			// prepare to draw sprites to the screen
 
-
-	for(int i = 0; i < lToDraw.getSize(); i++)
+	if(state == GAME)
 	{
-		D3DXMatrixScaling(&matScale,					// prepare the scaling matrix
-							0.80f * lToDraw[i]->getScale(),	
-							0.80f * lToDraw[i]->getScale(), 0);
-		D3DXMatrixRotationZ(&matRotation,				// prepare the rotation matrix
-								lToDraw[i]->getAngle());
-		D3DXMatrixTranslation(&matTrans,				// prepare the translation matrix
-			lToDraw[i]->getPosition().x, 
-			lToDraw[i]->getPosition().y, 
-  			0);
+		for(int i = 0; i < lToDraw.getSize(); i++)
+		{
+			D3DXMatrixScaling(&matScale,					// prepare the scaling matrix
+								0.80f * lToDraw[i]->getScale(),	
+								0.80f * lToDraw[i]->getScale(), 0);
+			D3DXMatrixRotationZ(&matRotation,				// prepare the rotation matrix
+									lToDraw[i]->getAngle());
+			D3DXMatrixTranslation(&matTrans,				// prepare the translation matrix
+				lToDraw[i]->getPosition().x, 
+				lToDraw[i]->getPosition().y, 
+  				0);
 
 
-		// use scaling, rotation, and translation matrices to setup the world transform
-		D3DXMatrixMultiply(&matWorld, &matScale, &matRotation);	// world = scaling * rotation
-		D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);	// world = world * translation
+			// use scaling, rotation, and translation matrices to setup the world transform
+			D3DXMatrixMultiply(&matWorld, &matScale, &matRotation);	// world = scaling * rotation
+			D3DXMatrixMultiply(&matWorld, &matWorld, &matTrans);	// world = world * translation
 
-		m_pD3DSprite->SetTransform(&matWorld);					// apply the world transform to the object
-		m_pD3DSprite->Draw(lToDraw[i]->getTexture(), 0, NULL,	// draw
-			0, D3DCOLOR_ARGB(255, 255, 255, 255));
+			m_pD3DSprite->SetTransform(&matWorld);					// apply the world transform to the object
+			m_pD3DSprite->Draw(lToDraw[i]->getTexture(), 0, NULL,	// draw
+				0, D3DCOLOR_ARGB(255, 255, 255, 255));
+
+			Font.Draw(lToDraw.p1Score, lToDraw.p2Score);
+		}
+	}
+	else if(state == MENU)
+	{
+		if(theMenu.isOnMain)	// if it is on the main menu
+		{
+			m_pD3DSprite->Draw(theMenu.m_mainBackground.lpTexture, 0, NULL,	// draw the menu background
+					0, D3DCOLOR_ARGB(255, 255, 25, 255));
+
+			// draw all the buttons
+			for(int i = 0; i < theMenu.numButtons; i++)
+			{
+				D3DXMatrixTranslation(&matTrans,
+					theMenu.m_Buttons[i].getPosition().x, 
+					theMenu.m_Buttons[i].getPosition().y, 
+  					0);
+
+				m_pD3DSprite->SetTransform(&matTrans);					// apply the world transform to the object
+				m_pD3DSprite->Draw(theMenu.m_Buttons[i].getTexture(), 0, NULL,	// draw
+					0, D3DCOLOR_ARGB(255, 255, 255, 255));
+			}
+		}
+		else			// if it's on the credits page, draw the credits
+		{
+			m_pD3DSprite->Draw(theMenu.m_CreditsBackground.lpTexture, 0, NULL,
+					0, D3DCOLOR_ARGB(255, 255, 25, 255));
+		}
 	}
 
 	m_pD3DSprite->End();							// stop drawing sprites
-
-	Font.Draw(lToDraw.p1Score, lToDraw.p2Score);
 
 	hr = m_pD3DDevice->EndScene();					// stop preparing the frame
 
@@ -207,7 +245,8 @@ Renderer::~Renderer()
 	
 	for(int i = 0; i < TEXTURESIZE; i++)
 	{
-		m_tPacks[i].lpTexture->Release();
+		if(m_tPacks[i].lpTexture != NULL)
+			m_tPacks[i].lpTexture->Release();
 	}
 }
 

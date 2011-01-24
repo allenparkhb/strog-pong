@@ -25,7 +25,7 @@ void DirectShow::Init(HWND hWnd)
 	// media event receives events from the filter graph
 	m_pGraphBuilder->QueryInterface(IID_IMediaEvent, (void**)&m_pMediaEvent);
 
-	m_pGraphBuilder->RenderFile(L"Intro.wmv", NULL);
+	m_pGraphBuilder->RenderFile(L"Intro.avi", NULL);
 
 	// video window
 	m_pMediaControl->QueryInterface(IID_IVideoWindow, (void**)&m_pVideoWindow);

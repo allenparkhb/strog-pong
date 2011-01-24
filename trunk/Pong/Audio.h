@@ -67,17 +67,23 @@ public:
 		}
 
 		system->createSound("pop.wav",	FMOD_DEFAULT, 0, &effect1);		// load the tada effect
+		system->createStream("Take On Me.mp3", FMOD_LOOP_NORMAL | FMOD_2D | FMOD_HARDWARE, 0, &stream1); 
+		system->playSound(FMOD_CHANNEL_FREE, stream1, true, &channel);
 	}
 	void PlayEffect()
 	{
-		//channel->isPlaying(&isPlaying);		// get the state of the audio
-		//if(soundKeyDown && !isPlaying)		// if the space bar is being pressed and the sound is not already playing
-		//{
-			system->playSound(FMOD_CHANNEL_FREE, effect1, false, &channel);	// play sound
-		//}
+		system->playSound(FMOD_CHANNEL_FREE, effect1, false, &channel);	// play sound	
+	}
 
+	// toggles background music on/off
+	void StreamOn()
+	{
+		system->playSound(FMOD_CHANNEL_FREE, stream1, false, &channel);
+	}
 
-		
+	void StreamOff()
+	{
+		system->playSound(FMOD_CHANNEL_FREE, stream1, true, &channel);
 	}
 };
 

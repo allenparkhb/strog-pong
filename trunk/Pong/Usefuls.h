@@ -8,16 +8,53 @@ enum eTextures
 	WALL,
 	PADDLE,
 	BALL,
+
+	// used for menu textures
+	MAINMENU,
+	PLAY_UNP,
+	PLAY_P,
+	OPTIONS_UNP,
+	OPTIONS_P,
+	CREDITS_UNP,
+	CREDITS_P,
+	CREDITSPAGE,	// the actual credits page, not to be confused with the credits button
+	QUIT_UNP,
+	QUIT_P,
 	TEXTURESIZE
 };
 
 enum ePositions
 {
+	// game object positions
 	TOP,
 	BOTTOM,
 	LEFT,
 	RIGHT,
-	MIDDLE
+	MIDDLE,
+
+	//menu positions
+	FIRST,
+	SECOND,
+	THIRD,
+	FOURTH
+
+};
+
+enum eScoreState
+{
+	INPROGRESS,
+	P1WINS,
+	P2WINS
+};
+
+enum eButton
+{
+	NONE,
+	PLAYBUTTON,
+	OPTIONSBUTTON,
+	CREDITSBUTTON,
+	QUITBUTTON,
+	MAXBUTTONS
 };
 
 enum eGameStates
@@ -34,6 +71,16 @@ struct TexturePack
 {
 	LPDIRECT3DTEXTURE9	lpTexture;
 	D3DXIMAGE_INFO		imgInfo;
+
+	bool operator==(TexturePack comparee)
+	{
+		if(this->lpTexture == comparee.lpTexture)
+		{
+			return true;
+		}
+
+		return false;
+	}
 };
 
 struct ScreenDim

@@ -9,6 +9,7 @@
 #include "Object.h"
 #include "ObjectList.h"
 #include "Usefuls.h"
+#include "Menu.h"
 
 class ObjectList;
 
@@ -49,7 +50,7 @@ public:
 	}
 	void Init(HWND hWnd);											// initializes all systems of the class
 	void Update();													// updates fps counter and sprite rotation
-	void RenderOneFrame(ObjectList vToDraw);						// renders one frame onto the screen
+	void RenderOneFrame(eGameStates state, ObjectList lToDraw, Menu theMenu);// renders one frame onto the screen
 	~Renderer();													// releases memory
 
 	// get functions

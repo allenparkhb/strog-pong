@@ -56,7 +56,7 @@ void ObjectList::ForgiveCollisions(int elem)
 					p2Score++;
 					List[elem]->setBack();
 				}
-				else if(List[elem]->m_BoundingRect.right >= dimensions.width)
+				else if(List[elem]->m_BoundingRect.right >= (LONG)dimensions.width)
 				{
 					p1Score++; 
 					List[elem]->setBack();
@@ -66,13 +66,20 @@ void ObjectList::ForgiveCollisions(int elem)
 	}
 }
 
-void ObjectList::Update()
+eScoreState ObjectList::Update()
 {
 	for(int i = 0; i < currSize; i++)
 	{
 		List[i]->Update();
 		ForgiveCollisions(i);
 	}
+
+	if(p1Score == 3)
+		return P1WINS;
+	else if(p2Score == 3)
+		return P2WINS;
+
+	return INPROGRESS;
 }
 
 void ObjectList::Push(Object* pObj)
