@@ -20,6 +20,16 @@ enum ePositions
 	MIDDLE
 };
 
+enum eGameStates
+{
+	LOADING,
+	INTRO,
+	MENU,
+	GAME,
+	CREDITS,
+	QUIT
+};
+
 struct TexturePack
 {
 	LPDIRECT3DTEXTURE9	lpTexture;

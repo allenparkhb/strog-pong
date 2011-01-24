@@ -5,7 +5,10 @@ DirectInput::DirectInput()
 	: m_pDIObject(NULL)
 	, m_pDIKeyboard(NULL)
 	, m_pDIMouse(NULL)
-{}
+{
+	for(int i = 0; i < 256; i++)
+		m_bKeyDown[i] = false;
+}
 
 // initialize object and peripheral devices
 void DirectInput::Init(HWND hWnd, HINSTANCE hInst)
@@ -44,6 +47,24 @@ void DirectInput::PollDevices()
 		ZeroMemory(m_kbBuffer, sizeof(m_kbBuffer));
 
 		hr = m_pDIKeyboard->Acquire();
+	}
+	
+	for(int i = 0; i < 256; i++)
+	{
+		if(keyDown((char)i))
+		{
+			if(!m_bKeyDown[i])
+			{
+				m_bKeyDown[i] = true;
+			}
+		}
+		else
+		{
+			if(m_bKeyDown[i])
+			{
+				m_bKeyDown[i] = false;
+			}
+		}
 	}
 
 	// get the state of the mouse

@@ -5,7 +5,9 @@
 #include <assert.h>
 #include "resource.h"
 #include "Renderer.h"
+#include "Audio.h"
 #include "DirectInput.h"
+#include "DirectShow.h"
 #include "Paddle.h"
 #include "Ball.h"
 #include "ObjectList.h"
@@ -14,46 +16,29 @@
 /* Prototypes */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR psCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-HWND OpenWindow(const char* cszClassName, const char* cszWindowName, int nCmdShow);
+void OpenWindow(const char* cszClassName, const char* cszWindowName, int nCmdShow);
 
 ObjectList CreateObjects(int size);
-void Update(ObjectList &vObjects);
+void UpdateGame();
+bool Initialize(HINSTANCE hInstance, int nCmdShow);
+void Update(HINSTANCE, int nCmdShow);
 
+eGameStates eState = LOADING;
 ScreenDim g_Dimensions;
+HWND hWnd;
+ObjectList lObjects;
+bool isRunning = true;
 
 /*****************************************************\
 * WinMain                                             *
 \*****************************************************/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-	g_Dimensions.width = 800;
-	g_Dimensions.height = 600;
-
-	/* Create the main window */
-	HWND hWnd = OpenWindow("D3DWindow", "Gear Pong", nCmdShow);
-	if (NULL == hWnd)
-	{
-		return E_FAIL;
-	}
-
-	RECT rClientRect;									// grab the screen dimensions
-	GetClientRect(hWnd, &rClientRect);
-	g_Dimensions.width = (int)(rClientRect.right - rClientRect.left);
-	g_Dimensions.height = (int)(rClientRect.bottom - rClientRect.top);
-
-	Renderer::Instance()->Init(hWnd);							// initialize renderer, giving it the window handler
-	DirectInput::Instance()->Init(hWnd, hInstance);				// initialize DirectInput
-	ObjectList lObjects;
-
-	lObjects.Init(cnObjectNum, g_Dimensions);
-
-	lObjects = CreateObjects(cnObjectNum);
-	
+{	
 
 	/* Message loop */
 	MSG uMsg;
     memset(&uMsg, 0, sizeof(uMsg));
-	while (uMsg.message != WM_QUIT)
+	while (uMsg.message != WM_QUIT && isRunning)
 	{
 		/* Handle incoming messages */
 		while (PeekMessage(&uMsg, NULL, 0, 0, PM_REMOVE))
@@ -61,10 +46,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			TranslateMessage(&uMsg);
 			DispatchMessage(&uMsg);
 		}
-		DirectInput::Instance()->PollDevices();				// get input
-		Renderer::Instance()->RenderOneFrame(lObjects);		// draw one frame
-		Update(lObjects);									// update
-
+		Update(hInstance, nCmdShow);						// update the program
 	}
 
     UnregisterClass("D3DWindow", hInstance);
@@ -72,13 +54,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return uMsg.wParam;
 }
 
-
-HWND OpenWindow(const char* cszWinClassName, const char* cszWindowName, int nCmdShow)
+void OpenWindow(const char* cszWinClassName, const char* cszWindowName, int nCmdShow)
 {
 	/* Register window class and create window */
 
 	WNDCLASSEX winClass;
-	HWND hWnd;
 
 	HINSTANCE hInstance = ::GetModuleHandle(NULL);
 	assert(NULL != hInstance);
@@ -100,7 +80,7 @@ HWND OpenWindow(const char* cszWinClassName, const char* cszWindowName, int nCmd
 
 	if (0 == RegisterClassEx(&winClass))
 	{
-		return NULL;
+		return;
 	}
 
 	hWnd = ::CreateWindowEx(NULL,
@@ -113,7 +93,6 @@ HWND OpenWindow(const char* cszWinClassName, const char* cszWindowName, int nCmd
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-	return hWnd;
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -133,8 +112,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
-
-
 
 ObjectList CreateObjects(int size)
 {
@@ -171,8 +148,67 @@ ObjectList CreateObjects(int size)
 	return objects;
 }
 
-void Update(ObjectList &vObjects)
+void UpdateGame()
 {
 	Renderer::Instance()->Update();
-	vObjects.Update();
+	lObjects.Update();
+}
+
+bool Initialize(HINSTANCE hInstance, int nCmdShow)
+{
+	g_Dimensions.width = 800;
+	g_Dimensions.height = 600;
+
+	/* Create the main window */
+	OpenWindow("D3DWindow", "Pong", nCmdShow);
+	if (NULL == hWnd)
+	{
+		return false;
+	}
+
+	RECT rClientRect;									// grab the screen dimensions
+	GetClientRect(hWnd, &rClientRect);
+	g_Dimensions.width = (int)(rClientRect.right - rClientRect.left);
+	g_Dimensions.height = (int)(rClientRect.bottom - rClientRect.top);
+
+	Renderer::Instance()->Init(hWnd);					// initialize renderer, giving it the window handler
+	DirectInput::Ins()->Init(hWnd, hInstance);			// initialize DirectInput
+	DirectShow::Ins()->Init(hWnd);
+	Audio::Ins()->Init();								// initialize the Sound Engine
+	
+
+	lObjects.Init(cnObjectNum, g_Dimensions);			// prepares the object list to store objects
+
+	lObjects = CreateObjects(cnObjectNum);				// create the objects and store them in the list
+
+	return true;
+}
+
+void Update(HINSTANCE hInstance, int nCmdShow)
+{
+	switch(eState)
+	{
+	case LOADING:
+		if(Initialize(hInstance, nCmdShow))
+			eState = INTRO;
+		else
+			eState = QUIT;
+		break;
+	case INTRO:
+		if(!DirectShow::Ins()->PlayVideo())
+			eState = GAME;
+		break;
+	case MENU:
+		break;
+	case GAME:
+		UpdateGame();										// update
+		Renderer::Instance()->RenderOneFrame(lObjects);		// draw one frame
+		break;
+	case CREDITS:
+		break;
+	case QUIT:
+		isRunning = false;
+		break;
+	}
+	DirectInput::Ins()->PollDevices();				// get input
 }

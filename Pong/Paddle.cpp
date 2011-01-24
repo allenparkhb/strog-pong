@@ -41,10 +41,10 @@ void Paddle::Update()
 {
 	m_vOldPos = m_vPos;
 
-	if(DirectInput::Instance()->keyDown(m_upKey))
+	if(DirectInput::Ins()->keyDown(m_upKey))
 			m_vPos.y -= m_speed;
 
-	if(DirectInput::Instance()->keyDown(m_downKey))
+	if(DirectInput::Ins()->keyDown(m_downKey))
 			m_vPos.y += m_speed;
 
 	// update the bounding rect if the position has changed
