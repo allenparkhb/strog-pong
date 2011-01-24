@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
+#include <windowsX.h>
 #include <assert.h>
 #include "resource.h"
 #include "Renderer.h"
@@ -11,7 +12,6 @@
 #include "Paddle.h"
 #include "Ball.h"
 #include "ObjectList.h"
-#include "Usefuls.h"
 
 /* Prototypes */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR psCmdLine, int nCmdShow);
@@ -19,7 +19,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void OpenWindow(const char* cszClassName, const char* cszWindowName, int nCmdShow);
 
 ObjectList CreateObjects(int size);
-void UpdateGame();
+eScoreState UpdateGame();
 bool Initialize(HINSTANCE hInstance, int nCmdShow);
 void Update(HINSTANCE, int nCmdShow);
 
@@ -27,14 +27,20 @@ eGameStates eState = LOADING;
 ScreenDim g_Dimensions;
 HWND hWnd;
 ObjectList lObjects;
+Menu g_GameMenu;
+
 bool isRunning = true;
+
+// used for mouse click detection
+int g_mousePosX;
+int g_mousePosY;
+bool g_mouseDown = false;
 
 /*****************************************************\
 * WinMain                                             *
 \*****************************************************/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {	
-
 	/* Message loop */
 	MSG uMsg;
     memset(&uMsg, 0, sizeof(uMsg));
@@ -109,6 +115,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					PostQuitMessage(0);
 					break;
 				}
+		case WM_LBUTTONDOWN:
+			g_mousePosX = GET_X_LPARAM(lParam);
+			g_mousePosY = GET_Y_LPARAM(lParam);
+			g_mouseDown = true;
+			break;
+		case WM_LBUTTONUP:
+			g_mouseDown = false;
+			break;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
@@ -148,10 +162,10 @@ ObjectList CreateObjects(int size)
 	return objects;
 }
 
-void UpdateGame()
+eScoreState UpdateGame()
 {
 	Renderer::Instance()->Update();
-	lObjects.Update();
+	return lObjects.Update();
 }
 
 bool Initialize(HINSTANCE hInstance, int nCmdShow)
@@ -175,6 +189,7 @@ bool Initialize(HINSTANCE hInstance, int nCmdShow)
 	DirectInput::Ins()->Init(hWnd, hInstance);			// initialize DirectInput
 	DirectShow::Ins()->Init(hWnd);
 	Audio::Ins()->Init();								// initialize the Sound Engine
+	g_GameMenu.Init(g_Dimensions);
 	
 
 	lObjects.Init(cnObjectNum, g_Dimensions);			// prepares the object list to store objects
@@ -196,19 +211,29 @@ void Update(HINSTANCE hInstance, int nCmdShow)
 		break;
 	case INTRO:
 		if(!DirectShow::Ins()->PlayVideo())
+		{
+			Audio::Ins()->StreamOn();							// turn the background music on
 			eState = GAME;
+		}
 		break;
 	case MENU:
+		g_GameMenu.Update(g_mouseDown, g_mousePosX, g_mousePosY);
+		Renderer::Instance()->RenderOneFrame(MENU, lObjects, g_GameMenu);
+		Audio::Ins()->StreamOff();
 		break;
 	case GAME:
-		UpdateGame();										// update
-		Renderer::Instance()->RenderOneFrame(lObjects);		// draw one frame
+		eScoreState score;										// used to check if the game has been won
+		score = UpdateGame();									// update
+		Renderer::Instance()->RenderOneFrame(GAME, lObjects, g_GameMenu);			// draw one frame
+		if(score != INPROGRESS)									// sets eState to 
+			eState = QUIT;
 		break;
 	case CREDITS:
 		break;
 	case QUIT:
+		Audio::Ins()->StreamOff();
 		isRunning = false;
 		break;
 	}
-	DirectInput::Ins()->PollDevices();				// get input
+	DirectInput::Ins()->PollDevices();						// get input
 }

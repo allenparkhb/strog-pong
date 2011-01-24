@@ -43,7 +43,7 @@ void Ball::Update()
 	{
 		if(DirectInput::Ins()->mouseButtonDown(0))
 		{
-			m_speed = 6;
+			m_speed = 10;
 			m_vVelocity = m_vDirection * (float)m_speed;
 		}
 	}

@@ -12,6 +12,7 @@ private:
 
 public:
 	int score;
+	virtual void Init(int loc, ScreenDim dimensions) {}
 	virtual void Init(int loc, char up, char down, ScreenDim dimensions);
 	virtual void Update();
 	virtual void MoveBack();

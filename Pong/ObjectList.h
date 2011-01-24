@@ -17,7 +17,7 @@ public:
 	int p2Score;
 
 	void Init(int size, ScreenDim dims);
-	void Update();
+	eScoreState Update();					// returns the win condition, if there is any
 	void Push(Object* pObj);
 
 	int getSize() { return currSize; }
