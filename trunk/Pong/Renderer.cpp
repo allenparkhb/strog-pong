@@ -137,6 +137,8 @@ void Renderer::Update()
 	Font.Update();
 }
 
+
+// renders the game based on what state it's currently in
 void Renderer::RenderOneFrame(eGameStates state, ObjectList lToDraw, Menu theMenu)
 {
 	if(NULL == m_pD3DDevice) return;

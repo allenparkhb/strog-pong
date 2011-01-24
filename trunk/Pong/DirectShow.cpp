@@ -70,10 +70,10 @@ bool DirectShow::PlayVideo()
 	return !isFinished;
 }
 
-void DirectShow::StopVideo()
-{
-	m_pMediaControl->Stop();
-}
+//void DirectShow::StopVideo()
+//{
+//	m_pMediaControl->Stop();
+//}
 
 DirectShow::~DirectShow()
 {

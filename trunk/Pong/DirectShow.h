@@ -12,8 +12,8 @@ private:
 	IMediaEvent*		m_pMediaEvent;
 	IVideoWindow*		m_pVideoWindow;
 	HWND				m_hWnd;
-	bool isPlaying;
-	bool isFinished;
+	bool isPlaying;		// flags if the video is still playing
+	bool isFinished;	// flags if the video has already cleaned up after playing
 
 public:
 	inline static DirectShow* Ins()
@@ -23,7 +23,7 @@ public:
 	}
 	void Init(HWND hWnd);
 	bool PlayVideo();			// returns true if the video is still playing
-	void StopVideo();
+	//void StopVideo();			// stop  video and return screen to hWnd
 	~DirectShow();
 
 };

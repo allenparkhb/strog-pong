@@ -29,7 +29,7 @@ void Paddle::Init(int loc, char up, char down, ScreenDim dimensions)
 	this->m_upKey = up;
 	this->m_downKey = down;
 
-	m_speed = 2;
+	m_speed = 5;
 
 	m_vOldPos = m_vPos;
 

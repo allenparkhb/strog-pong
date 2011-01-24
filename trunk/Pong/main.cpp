@@ -23,12 +23,12 @@ eScoreState UpdateGame();
 bool Initialize(HINSTANCE hInstance, int nCmdShow);
 void Update(HINSTANCE, int nCmdShow);
 
-eGameStates eState = LOADING;
-ScreenDim g_Dimensions;
-HWND hWnd;
-ObjectList lObjects;
-Menu g_GameMenu;
-eButton g_menuResult = NUMBUTTONS;
+eGameStates eState = LOADING;		// the state of the game
+ScreenDim g_Dimensions;				// dimensions of the screen
+HWND hWnd;							// main window handler
+ObjectList lObjects;				// list of game objects
+Menu g_GameMenu;					// menu
+
 
 bool isRunning = true;
 
@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			TranslateMessage(&uMsg);
 			DispatchMessage(&uMsg);
 		}
-		Update(hInstance, nCmdShow);						// update the program
+		Update(hInstance, nCmdShow);				// update the program (acts as a FSM)
 	}
 
     UnregisterClass("D3DWindow", hInstance);
@@ -112,14 +112,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_KEYUP:
 				switch(wParam)
 				{
-				case VK_ESCAPE:
+				case VK_ESCAPE:					// pressing escape brings the game back to the menu
 					eState = MENU;
 					break;
 				}
-		case WM_LBUTTONDOWN:
+		case WM_LBUTTONDOWN:					// if the mouse was clicked, grab the position
 			g_mousePosX = GET_X_LPARAM(lParam);
 			g_mousePosY = GET_Y_LPARAM(lParam);
-			g_mouseDown = true;
+			g_mouseDown = true;					// set the mouse down flag to true
 			break;
 		case WM_LBUTTONUP:
 			g_mouseDown = false;
@@ -202,41 +202,41 @@ bool Initialize(HINSTANCE hInstance, int nCmdShow)
 
 void Update(HINSTANCE hInstance, int nCmdShow)
 {
+	eButton menuResult = NUMBUTTONS;	// used to determine what button was pressed in the menu
 	switch(eState)
 	{
-	case LOADING:
+	case LOADING:						// initialize all aspects of the game
 		if(Initialize(hInstance, nCmdShow))
-			eState = INTRO;
+			eState = INTRO;				// then directly after, switch to intro video
 		else
 			eState = QUIT;
 		break;
-	case INTRO:
+	case INTRO:							// play the video until it's supposed to stop
 		if(!DirectShow::Ins()->PlayVideo())
 		{
-			Audio::Ins()->StreamOn();							// turn the background music on
 			eState = MENU;
 		}
 		break;
 	case MENU:
-		g_menuResult = g_GameMenu.Update(g_mouseDown, g_mousePosX, g_mousePosY);
+		menuResult = g_GameMenu.Update(g_mouseDown, g_mousePosX, g_mousePosY);
 		Renderer::Instance()->RenderOneFrame(MENU, lObjects, g_GameMenu);
 		Audio::Ins()->StreamOff();
 
 		// change states if a button was pressed
-		switch(g_menuResult)
+		switch(menuResult)
 		{
 		case PLAYBUTTON:
-			eState = GAME;
-			Audio::Ins()->StreamOn();
-			Renderer::Instance()->RenderOneFrame(GAME, lObjects, g_GameMenu);
-			Sleep(1000);
-			break;
+			eState = GAME;				// set the state to play the game
+			Audio::Ins()->StreamOn();	// turn on background music
+			Renderer::Instance()->RenderOneFrame(GAME, lObjects, g_GameMenu);	// render one frame
+			Sleep(500);					// sleep so that DirectInput doesn't confuse the button being
+			break;						// clicked with the click to start the game
 		case OPTIONSBUTTON:
-			break;
-		case CREDITSBUTTON:
+			break;						// TODO: Create an options menu
+		case CREDITSBUTTON:				// set state to credits to display the credits
 			eState = CREDITS;
 			break;
-		case QUITBUTTON:
+		case QUITBUTTON:				// set state to quit the game
 			eState = QUIT;
 		}
 		break;
@@ -244,15 +244,23 @@ void Update(HINSTANCE hInstance, int nCmdShow)
 		eScoreState score;										// used to check if the game has been won
 		Renderer::Instance()->RenderOneFrame(GAME, lObjects, g_GameMenu);			// draw one frame
 		score = UpdateGame();									// update
-		if(score != INPROGRESS)									// sets eState to 
-			eState = QUIT;
+		if(score != INPROGRESS)			// if the game is over
+		{
+			lObjects.NewGame();			// start a new game
+			eState = MENU;				// go back to the menu
+		}
 		break;
-	case CREDITS:
+	case CREDITS:	// update the menu and render it (the credits page is a part of the menu)
+		menuResult = g_GameMenu.Update(g_mouseDown, g_mousePosX, g_mousePosY);
+		Renderer::Instance()->RenderOneFrame(MENU, lObjects, g_GameMenu);
+		if(menuResult == BACK)	// if the user clicks, go back to the main menu
+			eState = MENU;
 		break;
-	case QUIT:
+	case QUIT:					// if the user quits, flag the game to quit and shut off the sound
 		Audio::Ins()->StreamOff();
 		isRunning = false;
 		break;
 	}
-	DirectInput::Ins()->PollDevices();						// get input
+	DirectInput::Ins()->PollDevices();	// get input
+	Audio::Ins()->Update();				// give the sound engine time to work
 }
