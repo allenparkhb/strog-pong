@@ -28,6 +28,7 @@ ScreenDim g_Dimensions;
 HWND hWnd;
 ObjectList lObjects;
 Menu g_GameMenu;
+eButton g_menuResult = NUMBUTTONS;
 
 bool isRunning = true;
 
@@ -112,7 +113,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				switch(wParam)
 				{
 				case VK_ESCAPE:
-					PostQuitMessage(0);
+					eState = MENU;
 					break;
 				}
 		case WM_LBUTTONDOWN:
@@ -213,18 +214,36 @@ void Update(HINSTANCE hInstance, int nCmdShow)
 		if(!DirectShow::Ins()->PlayVideo())
 		{
 			Audio::Ins()->StreamOn();							// turn the background music on
-			eState = GAME;
+			eState = MENU;
 		}
 		break;
 	case MENU:
-		g_GameMenu.Update(g_mouseDown, g_mousePosX, g_mousePosY);
+		g_menuResult = g_GameMenu.Update(g_mouseDown, g_mousePosX, g_mousePosY);
 		Renderer::Instance()->RenderOneFrame(MENU, lObjects, g_GameMenu);
 		Audio::Ins()->StreamOff();
+
+		// change states if a button was pressed
+		switch(g_menuResult)
+		{
+		case PLAYBUTTON:
+			eState = GAME;
+			Audio::Ins()->StreamOn();
+			Renderer::Instance()->RenderOneFrame(GAME, lObjects, g_GameMenu);
+			Sleep(1000);
+			break;
+		case OPTIONSBUTTON:
+			break;
+		case CREDITSBUTTON:
+			eState = CREDITS;
+			break;
+		case QUITBUTTON:
+			eState = QUIT;
+		}
 		break;
 	case GAME:
 		eScoreState score;										// used to check if the game has been won
-		score = UpdateGame();									// update
 		Renderer::Instance()->RenderOneFrame(GAME, lObjects, g_GameMenu);			// draw one frame
+		score = UpdateGame();									// update
 		if(score != INPROGRESS)									// sets eState to 
 			eState = QUIT;
 		break;

@@ -49,12 +49,11 @@ enum eScoreState
 
 enum eButton
 {
-	NONE,
 	PLAYBUTTON,
 	OPTIONSBUTTON,
 	CREDITSBUTTON,
 	QUITBUTTON,
-	MAXBUTTONS
+	NUMBUTTONS
 };
 
 enum eGameStates
@@ -65,6 +64,13 @@ enum eGameStates
 	GAME,
 	CREDITS,
 	QUIT
+};
+
+enum eMenuStates
+{
+	MAINSTATE,
+	OPTIONSTATE,
+	CREDITSSTATE
 };
 
 struct TexturePack

@@ -195,13 +195,16 @@ void Renderer::RenderOneFrame(eGameStates state, ObjectList lToDraw, Menu theMen
 			m_pD3DSprite->Draw(lToDraw[i]->getTexture(), 0, NULL,	// draw
 				0, D3DCOLOR_ARGB(255, 255, 255, 255));
 
-			Font.Draw(lToDraw.p1Score, lToDraw.p2Score);
 		}
 	}
 	else if(state == MENU)
 	{
-		if(theMenu.isOnMain)	// if it is on the main menu
+		if(theMenu.eMState == MAINSTATE)	// if it is on the main menu
 		{
+			D3DXMatrixTranslation(&matTrans, 0.0f, 0.0f, 0.0f);
+			D3DXMatrixScaling(&matScale, .8f, .8f, 0);
+			D3DXMatrixMultiply(&matWorld, &matScale, &matTrans);
+			m_pD3DSprite->SetTransform(&matWorld);
 			m_pD3DSprite->Draw(theMenu.m_mainBackground.lpTexture, 0, NULL,	// draw the menu background
 					0, D3DCOLOR_ARGB(255, 255, 25, 255));
 
@@ -213,19 +216,33 @@ void Renderer::RenderOneFrame(eGameStates state, ObjectList lToDraw, Menu theMen
 					theMenu.m_Buttons[i].getPosition().y, 
   					0);
 
-				m_pD3DSprite->SetTransform(&matTrans);					// apply the world transform to the object
-				m_pD3DSprite->Draw(theMenu.m_Buttons[i].getTexture(), 0, NULL,	// draw
-					0, D3DCOLOR_ARGB(255, 255, 255, 255));
+				D3DXMatrixScaling(&matScale, .80f, .80f, 0);
+
+				D3DXMatrixMultiply(&matWorld, &matScale, &matTrans);
+
+				m_pD3DSprite->SetTransform(&matWorld);					// apply the world transform to the object
+				m_pD3DSprite->Draw(theMenu.m_Buttons[i].getDisplayTexture().lpTexture, 
+					0, NULL, 0, D3DCOLOR_ARGB(255, 255, 255, 255));
 			}
 		}
-		else			// if it's on the credits page, draw the credits
+		else if(theMenu.eMState == CREDITSSTATE)	// if it's on the credits page, draw the credits
 		{
+			D3DXMatrixTranslation(&matTrans, 0.0f, 0.0f, 0.0f);
+			D3DXMatrixScaling(&matScale, .8f, .55f, 0);
+			D3DXMatrixMultiply(&matWorld, &matScale, &matTrans);
+
+			m_pD3DSprite->SetTransform(&matWorld);
 			m_pD3DSprite->Draw(theMenu.m_CreditsBackground.lpTexture, 0, NULL,
 					0, D3DCOLOR_ARGB(255, 255, 25, 255));
 		}
 	}
 
 	m_pD3DSprite->End();							// stop drawing sprites
+
+	if(state == GAME)
+	{
+		Font.Draw(lToDraw.p1Score, lToDraw.p2Score);
+	}
 
 	hr = m_pD3DDevice->EndScene();					// stop preparing the frame
 

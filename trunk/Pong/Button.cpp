@@ -2,7 +2,7 @@
 
 void Button::Init(int loc, ScreenDim dimensions, int texture1, int texture2)
 {
-	top = 30;
+	top = 200;
 	m_tPack = Renderer::Instance()->getTexturePack(texture1);
 	m_tPack2 = Renderer::Instance()->getTexturePack(texture2);
 	displayTexture = m_tPack;
@@ -10,6 +10,7 @@ void Button::Init(int loc, ScreenDim dimensions, int texture1, int texture2)
 	m_vPos.x = ((float)dimensions.width * 0.5f) - (m_tPack.imgInfo.Width * 0.5f);
 
 	type = (eButton)loc;
+	spacing = 30;
 
 	// determines y position based on location enum
 	switch(loc)
@@ -18,13 +19,13 @@ void Button::Init(int loc, ScreenDim dimensions, int texture1, int texture2)
 		m_vPos.y = top;
 		break;
 	case OPTIONSBUTTON:
-		m_vPos.y = float(top + m_tPack.imgInfo.Width + spacing);
+		m_vPos.y = float(top + m_tPack.imgInfo.Height + spacing);
 		break;
 	case CREDITSBUTTON:
-		m_vPos.y = float(top + (m_tPack.imgInfo.Width * 2.0f) + (spacing * 2.0f));
+		m_vPos.y = float(top + (m_tPack.imgInfo.Height * 2.0f) + (spacing * 2.0f));
 		break;
 	case QUITBUTTON:
-		m_vPos.y = float(top + (m_tPack.imgInfo.Width * 3.0f) + (spacing * 3.0f));
+		m_vPos.y = float(top + (m_tPack.imgInfo.Height * 3.0f) + (spacing * 3.0f));
 		break;
 	}
 

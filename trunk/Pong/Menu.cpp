@@ -2,11 +2,13 @@
 
 void Menu::Init(ScreenDim dims)
 {
+	m_Buttons = new Button[4];
+
 	m_mainBackground = Renderer::Instance()->getTexturePack(MAINMENU);
 	m_CreditsBackground = Renderer::Instance()->getTexturePack(CREDITSPAGE);
-	isOnMain = true;
-	numButtons = MAXBUTTONS;
-
+	eMState = MAINSTATE;
+	numButtons = NUMBUTTONS;
+	eButton m_result = NUMBUTTONS;
 
 	m_Buttons[0].Init(PLAYBUTTON, dims, PLAY_UNP, PLAY_P);
 	m_Buttons[1].Init(OPTIONSBUTTON, dims, OPTIONS_UNP, OPTIONS_P);
@@ -16,14 +18,17 @@ void Menu::Init(ScreenDim dims)
 
 eButton Menu::Update(bool mousePressed, int mousePosX, int mousePosY)
 {
-	if(isOnMain)	// if the user is on the main menu
+	m_result = NUMBUTTONS;
+	// update procedure in the main menu
+	switch(eMState)
 	{
-		// check if any buttons are pressed 
-		eButton result = NONE;
+	case MAINSTATE:	// if the user is on the main menu
+		// check if any buttons are pressed if on the main screen
+		
 
 		if(mousePressed)
 		{
-			for(int i = PLAYBUTTON; i < numButtons; i++)
+			for(int i = 0; i < numButtons; i++)
 			{
 
 					if(m_Buttons[i].m_BoundingRect.top < mousePosY &&
@@ -32,12 +37,28 @@ eButton Menu::Update(bool mousePressed, int mousePosX, int mousePosY)
 					m_Buttons[i].m_BoundingRect.right > mousePosX)
 					{
 						m_Buttons[i].ChangeTextures();
-						result = (eButton)i;
+						m_result = (eButton)i;
 					}
 			}
-	}
+		}
+
+		if(m_result == CREDITSBUTTON)
+			eMState = CREDITSSTATE;
 
 		// return the value of what button was pressed, or NONE if none were pressed
-		return result;
+		return m_result;
+
+	case CREDITSSTATE:
+		// if the user clicks, simply return to the main page
+		if(mousePressed)
+		{
+			eMState = MAINSTATE;
+		}
+		return NUMBUTTONS;
 	}
+}
+
+Menu::~Menu()
+{
+	delete m_Buttons;
 }

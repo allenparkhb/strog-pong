@@ -20,4 +20,6 @@ public:
 	virtual void MoveBack(){int bob = 0;}
 	virtual void Bounce(int otherObject){int bob = 0;}
 	virtual void setBack(){int bob = 0;}
+
+	TexturePack getDisplayTexture() { return displayTexture; }
 };

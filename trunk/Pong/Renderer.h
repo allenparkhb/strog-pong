@@ -6,12 +6,13 @@
 #include <dxerr.h>
 #pragma comment(lib, "dxerr.lib")
 #include "FontHandler.h"
-#include "Object.h"
+//#include "Object.h"
 #include "ObjectList.h"
-#include "Usefuls.h"
+//#include "Usefuls.h"
 #include "Menu.h"
 
 class ObjectList;
+class Menu;
 
 // graphics engine
 class Renderer
