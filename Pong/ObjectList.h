@@ -19,6 +19,7 @@ public:
 	void Init(int size, ScreenDim dims);
 	eScoreState Update();					// returns the win condition, if there is any
 	void Push(Object* pObj);
+	void NewGame();
 
 	int getSize() { return currSize; }
 	Object* operator[](int index);

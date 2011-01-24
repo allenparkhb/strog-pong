@@ -10,7 +10,8 @@ class Audio
 private:
 	Audio();
 	FMOD::System* system;
-	FMOD::Sound* effect1;
+	FMOD::Sound* effect1;	// ball bouncing sound
+	FMOD::Sound* effect2;	// menu buttons click
 	FMOD::Sound* stream1;
 	bool isPlaying;
 
@@ -66,13 +67,18 @@ public:
 			}
 		}
 
-		system->createSound("pop.wav",	FMOD_DEFAULT, 0, &effect1);		// load the tada effect
+		system->createSound("pop.wav",	FMOD_DEFAULT, 0, &effect1);		// load the bounce effect
+		system->createSound("click.wav", FMOD_DEFAULT, 0, &effect2);	// load the click effect
 		system->createStream("Take On Me.mp3", FMOD_LOOP_NORMAL | FMOD_2D | FMOD_HARDWARE, 0, &stream1); 
 		system->playSound(FMOD_CHANNEL_FREE, stream1, true, &channel);
 	}
-	void PlayEffect()
+	void PlayBounceSound()
 	{
-		system->playSound(FMOD_CHANNEL_FREE, effect1, false, &channel);	// play sound	
+		system->playSound(FMOD_CHANNEL_FREE, effect1, false, &channel);	// play bounce sound	
+	}
+	void PlayClickSound()
+	{
+		system->playSound(FMOD_CHANNEL_FREE, effect2, false, &channel); // play click sound
 	}
 
 	// toggles background music on/off
@@ -84,6 +90,11 @@ public:
 	void StreamOff()
 	{
 		system->playSound(FMOD_CHANNEL_FREE, stream1, true, &channel);
+	}
+
+	void Update()
+	{
+		system->update();
 	}
 };
 

@@ -17,17 +17,6 @@ void ObjectList::ForgiveCollisions(int elem)
 	{
 		if(i != elem)
 		{
-			/*if(abs(List[i]->getPosition().x - List[elem]->getPosition().x) < 
-				List[i]->getImgInfo().Width + List[elem]->getImgInfo().Width
-				&&
-				abs(List[i]->getPosition().y - List[elem]->getPosition().y) <
-				List[i]->getImgInfo().Height + List[elem]->getImgInfo().Height)
-			{
-				collided = true;
-			}
-			else
-				collided = false;*/
-
 			if(!(List[i]->m_BoundingRect.bottom < List[elem]->m_BoundingRect.top ||
 			   List[i]->m_BoundingRect.top > List[elem]->m_BoundingRect.bottom ||
 			   List[i]->m_BoundingRect.right < List[elem]->m_BoundingRect.left ||
@@ -44,7 +33,7 @@ void ObjectList::ForgiveCollisions(int elem)
 				if(List[elem]->eType == BALL)
 				{
 					List[elem]->Bounce(List[i]->eType);	// ball bounces off object
-					Audio::Ins()->PlayEffect();
+					Audio::Ins()->PlayBounceSound();
 				}
 			}
 
@@ -98,5 +87,10 @@ Object* ObjectList::operator [](int index)
 
 ObjectList::~ObjectList()
 {
+	//delete [] List;
+}
 
+void ObjectList::NewGame()
+{
+	p1Score = p2Score = 0;
 }

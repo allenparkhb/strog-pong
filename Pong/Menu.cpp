@@ -38,6 +38,7 @@ eButton Menu::Update(bool mousePressed, int mousePosX, int mousePosY)
 					{
 						m_Buttons[i].ChangeTextures();
 						m_result = (eButton)i;
+						Audio::Ins()->PlayClickSound();
 					}
 			}
 		}
@@ -54,11 +55,11 @@ eButton Menu::Update(bool mousePressed, int mousePosX, int mousePosY)
 		{
 			eMState = MAINSTATE;
 		}
-		return NUMBUTTONS;
+		return BACK;
 	}
 }
 
 Menu::~Menu()
 {
-	delete m_Buttons;
+	//delete [] m_Buttons;
 }
