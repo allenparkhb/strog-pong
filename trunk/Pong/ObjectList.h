@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Object.h"
+#include "Audio.h"
 
 class ObjectList
 {
@@ -21,5 +22,6 @@ public:
 
 	int getSize() { return currSize; }
 	Object* operator[](int index);
+	~ObjectList();
 
 };

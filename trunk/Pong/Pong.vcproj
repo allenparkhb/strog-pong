@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Win32\api\inc&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,7 +58,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86&quot;;&quot;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64&quot;"
+				AdditionalDependencies="fmodex_vc.lib Strmiids.lib"
+				AdditionalLibraryDirectories="&quot;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86&quot;;&quot;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64&quot;;&quot;C:\Program Files (x86)\FMOD SoundSystem\FMOD Programmers API Win32\api\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -179,10 +180,6 @@
 				RelativePath=".\ObjectList.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\Renderer.cpp"
-				>
-			</File>
 			<Filter
 				Name="Objects"
 				>
@@ -203,6 +200,22 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Engines"
+				>
+				<File
+					RelativePath=".\Audio.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DirectShow.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Renderer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -219,10 +232,6 @@
 			</File>
 			<File
 				RelativePath=".\ObjectList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Renderer.h"
 				>
 			</File>
 			<File
@@ -249,6 +258,22 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Engines"
+				>
+				<File
+					RelativePath=".\Audio.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DirectShow.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Renderer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -261,6 +286,18 @@
 			</File>
 			<File
 				RelativePath=".\DirectX Skeleton.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\fmodex.dll"
+				>
+			</File>
+			<File
+				RelativePath=".\Intro.wmv"
+				>
+			</File>
+			<File
+				RelativePath=".\pop.wav"
 				>
 			</File>
 			<File

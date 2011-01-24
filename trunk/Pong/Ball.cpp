@@ -41,7 +41,7 @@ void Ball::Update()
 	// if the ball is not moving, check for mouse click to start
 	if(m_speed == 0)
 	{
-		if(DirectInput::Instance()->mouseButtonDown(0))
+		if(DirectInput::Ins()->mouseButtonDown(0))
 		{
 			m_speed = 6;
 			m_vVelocity = m_vDirection * (float)m_speed;

@@ -16,10 +16,11 @@ private:
 	LPDIRECTINPUTDEVICE8	m_pDIKeyboard;		// device managing keyboard input
 	LPDIRECTINPUTDEVICE8	m_pDIMouse;			// device managing mouse input
 	char					m_kbBuffer[256];	// captures keyboard input
+	bool					m_bKeyDown[256];
 	DIMOUSESTATE			m_mouseState;		// captures mouse input
 
 public:
-	inline static DirectInput* Instance()		// the instance of the singleton DirectInput
+	inline static DirectInput* Ins()		// the instance of the singleton DirectInput
 	{
 		static DirectInput input;
 		return &input;

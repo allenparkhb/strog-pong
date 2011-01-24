@@ -48,9 +48,9 @@ void FontHandler::Draw(int s1, int s2)
 							D3DCOLOR_ARGB(255, 255, 255, 255));
 
 	// draw the scores
-	m_pD3DFont->DrawTextA(NULL, itoa(m_score1, temp, 10), 1, &m_s1Rect,
+	m_pD3DFont->DrawTextA(NULL, _itoa(m_score1, temp, 10), 1, &m_s1Rect,
 							DT_LEFT | DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 255));
-	m_pD3DFont->DrawTextA(NULL, itoa(m_score2, temp, 10), 1, &m_s2Rect,
+	m_pD3DFont->DrawTextA(NULL, _itoa(m_score2, temp, 10), 1, &m_s2Rect,
 							DT_LEFT | DT_NOCLIP, D3DCOLOR_ARGB(255, 255, 255, 255));
 
 	m_oss.clear();

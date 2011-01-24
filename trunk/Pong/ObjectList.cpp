@@ -44,6 +44,7 @@ void ObjectList::ForgiveCollisions(int elem)
 				if(List[elem]->eType == BALL)
 				{
 					List[elem]->Bounce(List[i]->eType);	// ball bounces off object
+					Audio::Ins()->PlayEffect();
 				}
 			}
 
@@ -86,4 +87,9 @@ void ObjectList::Push(Object* pObj)
 Object* ObjectList::operator [](int index)
 {
 	return List[index];
+}
+
+ObjectList::~ObjectList()
+{
+
 }
